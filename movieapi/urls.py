@@ -16,6 +16,7 @@ router.register(r'genres', core.views.GenreViewSet)
 router.register(r'images', core.views.ImageViewSet)
 
 urlpatterns = [
+    url(r'^$', core.views.HomeTemplateView.as_view(), name='home', ),
     url(r'^api/', include(router.urls)),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^rest-auth/', include('rest_auth.urls')),
