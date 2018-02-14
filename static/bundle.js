@@ -1,11 +1,15 @@
 (function(){function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s}return e})()({1:[function(require,module,exports){
 'use strict';
 
+var _router = require('@hyperapp/router');
+
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
+console.log(_router.location);
 var reducers = module.exports = {
+    location: _router.location.actions,
     movies: {
         load: function load(url) {
             return function (state, actions) {
@@ -241,7 +245,7 @@ var reducers = module.exports = {
     }
 };
 
-},{}],2:[function(require,module,exports){
+},{"@hyperapp/router":24}],2:[function(require,module,exports){
 "use strict";
 
 var _require = require('hyperapp'),
@@ -269,7 +273,7 @@ var Empty = module.exports = function () {
     );
 };
 
-},{"hyperapp":23}],3:[function(require,module,exports){
+},{"hyperapp":25}],3:[function(require,module,exports){
 "use strict";
 
 var _require = require('hyperapp'),
@@ -323,7 +327,7 @@ var FilmCard = module.exports = function (_ref) {
   );
 };
 
-},{"hyperapp":23}],4:[function(require,module,exports){
+},{"hyperapp":25}],4:[function(require,module,exports){
 'use strict';
 
 var _require = require('hyperapp'),
@@ -343,7 +347,7 @@ var FilmsList = module.exports = function (_ref) {
     );
 };
 
-},{"hyperapp":23}],5:[function(require,module,exports){
+},{"hyperapp":25}],5:[function(require,module,exports){
 'use strict';
 
 var _FilmCard = require('./FilmCard.js');
@@ -366,7 +370,7 @@ var FilmsView = module.exports = function (_ref) {
     );
 };
 
-},{"./FilmCard.js":3,"hyperapp":23}],6:[function(require,module,exports){
+},{"./FilmCard.js":3,"hyperapp":25}],6:[function(require,module,exports){
 "use strict";
 
 var _require = require('hyperapp'),
@@ -404,7 +408,7 @@ var FormDateInput = module.exports = function (_ref) {
     );
 };
 
-},{"hyperapp":23}],7:[function(require,module,exports){
+},{"hyperapp":25}],7:[function(require,module,exports){
 "use strict";
 
 var _require = require('hyperapp'),
@@ -431,7 +435,7 @@ var FormInput = module.exports = function (_ref) {
     );
 };
 
-},{"hyperapp":23}],8:[function(require,module,exports){
+},{"hyperapp":25}],8:[function(require,module,exports){
 'use strict';
 
 var _require = require('hyperapp'),
@@ -445,7 +449,7 @@ var Input = module.exports = function (_ref) {
     }, value: text });
 };
 
-},{"hyperapp":23}],9:[function(require,module,exports){
+},{"hyperapp":25}],9:[function(require,module,exports){
 'use strict';
 
 var _require = require('hyperapp'),
@@ -517,7 +521,7 @@ var MovieRow = module.exports = function (_ref) {
     );
 };
 
-},{"hyperapp":23}],10:[function(require,module,exports){
+},{"hyperapp":25}],10:[function(require,module,exports){
 'use strict';
 
 var _MovieRow = require('./MovieRow.js');
@@ -533,7 +537,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var _require = require('hyperapp'),
     h = _require.h;
 
-var Movies = module.exports = function (_ref) {
+var MoviesTable = module.exports = function (_ref) {
     var movies = _ref.movies,
         actions = _ref.actions;
     return h(
@@ -597,7 +601,7 @@ var Movies = module.exports = function (_ref) {
     );
 };
 
-},{"./MovieRow.js":9,"./PlotModal.js":16,"hyperapp":23}],11:[function(require,module,exports){
+},{"./MovieRow.js":9,"./PlotModal.js":16,"hyperapp":25}],11:[function(require,module,exports){
 'use strict';
 
 var _require = require('hyperapp'),
@@ -645,7 +649,7 @@ var Toast = module.exports = function (_ref) {
     );
 };
 
-},{"hyperapp":23}],12:[function(require,module,exports){
+},{"hyperapp":25}],12:[function(require,module,exports){
 'use strict';
 
 var _PersonRow = require('./PersonRow.js');
@@ -706,7 +710,7 @@ var People = module.exports = function (_ref) {
     );
 };
 
-},{"./PersonRow.js":15,"hyperapp":23}],13:[function(require,module,exports){
+},{"./PersonRow.js":15,"hyperapp":25}],13:[function(require,module,exports){
 'use strict';
 
 var _FormInput = require('./FormInput.js');
@@ -770,7 +774,7 @@ var PersonForm = module.exports = function (_ref) {
     );
 };
 
-},{"./FormDateInput.js":6,"./FormInput.js":7,"hyperapp":23}],14:[function(require,module,exports){
+},{"./FormDateInput.js":6,"./FormInput.js":7,"hyperapp":25}],14:[function(require,module,exports){
 'use strict';
 
 var _SpinnerSmall = require('./SpinnerSmall.js');
@@ -835,7 +839,7 @@ var PersonModal = module.exports = function (_ref) {
     );
 };
 
-},{"./PersonForm.js":13,"./SpinnerSmall.js":18,"hyperapp":23}],15:[function(require,module,exports){
+},{"./PersonForm.js":13,"./SpinnerSmall.js":18,"hyperapp":25}],15:[function(require,module,exports){
 'use strict';
 
 var _FilmsList = require('./FilmsList.js');
@@ -889,7 +893,7 @@ var PersonRow = module.exports = function (_ref) {
     );
 };
 
-},{"./FilmsList.js":4,"hyperapp":23}],16:[function(require,module,exports){
+},{"./FilmsList.js":4,"hyperapp":25}],16:[function(require,module,exports){
 'use strict';
 
 var _require = require('hyperapp'),
@@ -942,7 +946,7 @@ var PlotModal = module.exports = function (_ref) {
     );
 };
 
-},{"hyperapp":23}],17:[function(require,module,exports){
+},{"hyperapp":25}],17:[function(require,module,exports){
 "use strict";
 
 var _require = require('hyperapp'),
@@ -960,7 +964,7 @@ var Spinner = module.exports = function () {
     );
 };
 
-},{"hyperapp":23}],18:[function(require,module,exports){
+},{"hyperapp":25}],18:[function(require,module,exports){
 "use strict";
 
 var _require = require('hyperapp'),
@@ -972,7 +976,7 @@ var SpinnerSmall = module.exports = function () {
   return h("div", { "class": "loading loading-lg" });
 };
 
-},{"hyperapp":23}],19:[function(require,module,exports){
+},{"hyperapp":25}],19:[function(require,module,exports){
 'use strict';
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
@@ -1020,7 +1024,58 @@ var Table = module.exports = function (_ref) {
     );
 };
 
-},{"hyperapp":23}],20:[function(require,module,exports){
+},{"hyperapp":25}],20:[function(require,module,exports){
+"use strict";
+
+var _hyperapp = require("hyperapp");
+
+var Table = module.exports = function (_ref) {
+  var text = _ref.text,
+      count = _ref.count,
+      actions = _ref.actions;
+  return (0, _hyperapp.h)(
+    "ul",
+    { "class": "tab tab-block" },
+    (0, _hyperapp.h)(
+      "li",
+      { "class": "tab-item active" },
+      (0, _hyperapp.h)(
+        "a",
+        { href: "#" },
+        "Music"
+      )
+    ),
+    (0, _hyperapp.h)(
+      "li",
+      { "class": "tab-item" },
+      (0, _hyperapp.h)(
+        "a",
+        { href: "#", "class": "active" },
+        "Playlists"
+      )
+    ),
+    (0, _hyperapp.h)(
+      "li",
+      { "class": "tab-item" },
+      (0, _hyperapp.h)(
+        "a",
+        { href: "#" },
+        "Radio"
+      )
+    ),
+    (0, _hyperapp.h)(
+      "li",
+      { "class": "tab-item" },
+      (0, _hyperapp.h)(
+        "a",
+        { href: "#" },
+        "Connect"
+      )
+    )
+  );
+};
+
+},{"hyperapp":25}],21:[function(require,module,exports){
 "use strict";
 
 var _require = require('hyperapp'),
@@ -1039,7 +1094,7 @@ var Toast = module.exports = function (_ref) {
     );
 };
 
-},{"hyperapp":23}],21:[function(require,module,exports){
+},{"hyperapp":25}],22:[function(require,module,exports){
 'use strict';
 
 var _Toast = require('./Toast.js');
@@ -1059,20 +1114,23 @@ var ToastContainer = module.exports = function (_ref) {
   });
 };
 
-},{"./Toast.js":20,"hyperapp":23}],22:[function(require,module,exports){
-'use strict';
+},{"./Toast.js":21,"hyperapp":25}],23:[function(require,module,exports){
+"use strict";
 
-var _hyperapp = require('hyperapp');
+var _hyperapp = require("hyperapp");
 
-var _actions = require('./actions.js');
+var _router = require("@hyperapp/router");
+
+var _actions = require("./actions.js");
 
 var _actions2 = _interopRequireDefault(_actions);
 
-var _views = require('./views.js');
+var _views = require("./views.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var state = {
+    location: _router.location.state,
     loading: true,
     loadingMovies: false,
     toasts: [],
@@ -1093,96 +1151,136 @@ var state = {
     }
 };
 
-(0, _hyperapp.app)(state, _actions2.default, _views.home, document.getElementById("app"));
+var application = (0, _hyperapp.app)(state, _actions2.default, _views.main, document.getElementById("app"));
 
-},{"./actions.js":1,"./views.js":24,"hyperapp":23}],23:[function(require,module,exports){
+var unsubscribe = _router.location.subscribe(application.location);
+
+},{"./actions.js":1,"./views.js":26,"@hyperapp/router":24,"hyperapp":25}],24:[function(require,module,exports){
+!function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports,require("hyperapp")):"function"==typeof define&&define.amd||e(t.router={},t.hyperapp)}(this,function(t,e){"use strict";function n(t,e,n,o){return{isExact:t,path:e,url:n,params:o}}function o(t){for(var e=t.length;"/"===t[--e];);return t.slice(0,e+1)}var i={state:{pathname:window.location.pathname,previous:window.location.pathname},actions:{go:function(t){history.pushState(null,"",t)},set:function(t){return t}},subscribe:function(t){function e(e){t.set({pathname:window.location.pathname,previous:e.detail?window.location.previous=e.detail:window.location.previous})}var n=function(t){return t.reduce(function(t,e){var n=history[e];return history[e]=function(t,e,o){n.call(this,t,e,o),dispatchEvent(new CustomEvent("pushstate",{detail:t}))},function(){history[e]=n,t&&t()}},null)}(["pushState","replaceState"]);return addEventListener("pushstate",e),addEventListener("popstate",e),function(){removeEventListener("pushstate",e),removeEventListener("popstate",e),n()}}};t.Link=function(t,n){var o=t.to,i=t.location||window.location;return t.href=o,t.onclick=function(e){0!==e.button||e.altKey||e.metaKey||e.ctrlKey||e.shiftKey||"_blank"===t.target||e.currentTarget.origin!==i.origin||(e.preventDefault(),o!==i.pathname&&history.pushState(i.pathname,"",o))},e.h("a",t,n)},t.Route=function(t){var e=t.location||window.location,i=function(t,e,i){if(t===e||!t)return n(t===e,t,e);var a=i&&i.exact,r=o(t).split("/"),c=o(e).split("/");if(!(r.length>c.length||a&&r.length<c.length)){var u=0,s={},p=r.length;for(e="";u<p;u++){if(":"===r[u][0])try{s[r[u].slice(1)]=c[u]=decodeURI(c[u])}catch(t){continue}else if(r[u]!==c[u])return;e+=c[u]+"/"}return n(!1,t,e.slice(0,-1),s)}}(t.path,e.pathname,{exact:!t.parent});return i&&t.render({match:i,location:e})},t.Switch=function(t,e){return e[0]},t.Redirect=function(t){var e=t.location||window.location;history.replaceState(t.from||e.pathname,"",t.to)},t.location=i});
+
+},{"hyperapp":25}],25:[function(require,module,exports){
 !function(e,n){"object"==typeof exports&&"undefined"!=typeof module?n(exports):"function"==typeof define&&define.amd||n(e.hyperapp={})}(this,function(e){"use strict";e.h=function(e,n){for(var t,r=[],o=[],i=arguments.length;i-- >2;)r.push(arguments[i]);for(;r.length;)if((t=r.pop())&&t.pop)for(i=t.length;i--;)r.push(t[i]);else null!=t&&!0!==t&&!1!==t&&o.push(t);return"function"==typeof e?e(n||{},o):{nodeName:e,attributes:n||{},children:o,key:n&&n.key}},e.app=function(e,n,t,r){var o,i=[],u=r&&r.children[0]||null,l=u&&function e(n,t){return{nodeName:n.nodeName.toLowerCase(),attributes:{},children:t.call(n.childNodes,function(n){return 3===n.nodeType?n.nodeValue:e(n,t)})}}(u,[].map),f=s(e),a=s(n);return d(function e(n,t,r){for(var o in r)"function"==typeof r[o]?function(e,o){r[e]=function(e){return"function"==typeof(e=o(e))&&(e=e(p(n,f),r)),e&&e!==(t=p(n,f))&&!e.then&&d(f=h(n,s(t,e),f)),e}}(o,r[o]):e(n.concat(o),t[o]=t[o]||{},r[o]=s(r[o]))}([],f,a)),a;function c(){o=!o;var e=t(f,a);for(r&&!o&&(u=function e(n,t,r,o,u,l){if(o===r);else if(null==r)t=n.insertBefore(y(o,u),t);else if(o.nodeName&&o.nodeName===r.nodeName){!function(e,n,t,r){for(var o in s(n,t))t[o]!==("value"===o||"checked"===o?e[o]:n[o])&&m(e,o,t[o],r,n[o]);t.onupdate&&i.push(function(){t.onupdate(e,n)})}(t,r.attributes,o.attributes,u=u||"svg"===o.nodeName);for(var f=[],a={},c={},d=0;d<r.children.length;d++){f[d]=t.childNodes[d];var h=r.children[d],p=v(h);null!=p&&(a[p]=[f[d],h])}for(var d=0,b=0;b<o.children.length;){var h=r.children[d],g=o.children[b],p=v(h),k=v(g);if(c[p])d++;else if(null==k)null==p&&(e(t,f[d],h,g,u),b++),d++;else{var w=a[k]||[];p===k?(e(t,w[0],w[1],g,u),d++):w[0]?e(t,t.insertBefore(w[0],f[d]),w[1],g,u):e(t,f[d],null,g,u),b++,c[k]=g}}for(;d<r.children.length;){var h=r.children[d];null==v(h)&&N(t,f[d],h),d++}for(var d in a)c[a[d][1].key]||N(t,a[d][0],a[d][1])}else o.nodeName===r.nodeName?t.nodeValue=o:(t=n.insertBefore(y(o,u),l=t),N(n,l,r));return t}(r,u,l,l=e));e=i.pop();)e()}function d(){o||(o=!o,setTimeout(c))}function s(e,n){var t={};for(var r in e)t[r]=e[r];for(var r in n)t[r]=n[r];return t}function h(e,n,t){var r={};return e.length?(r[e[0]]=e.length>1?h(e.slice(1),n,t[e[0]]):n,s(t,r)):n}function p(e,n){for(var t=0;t<e.length;t++)n=n[e[t]];return n}function v(e){return e?e.key:null}function m(e,n,t,r,o){if("key"===n);else if("style"===n)for(var i in s(o,t))e[n][i]=null==t||null==t[i]?"":t[i];else"function"==typeof t||n in e&&!r?e[n]=null==t?"":t:null!=t&&!1!==t&&e.setAttribute(n,t),null!=t&&!1!==t||e.removeAttribute(n)}function y(e,n){var t="string"==typeof e||"number"==typeof e?document.createTextNode(e):(n=n||"svg"===e.nodeName)?document.createElementNS("http://www.w3.org/2000/svg",e.nodeName):document.createElement(e.nodeName);if(e.attributes){e.attributes.oncreate&&i.push(function(){e.attributes.oncreate(t)});for(var r=0;r<e.children.length;r++)t.appendChild(y(e.children[r],n));for(var o in e.attributes)m(t,o,e.attributes[o],n)}return t}function N(e,n,t,r){function o(){e.removeChild(function e(n,t,r){if(r=t.attributes){for(var o=0;o<t.children.length;o++)e(n.childNodes[o],t.children[o]);r.ondestroy&&r.ondestroy(n)}return n}(n,t))}t.attributes&&(r=t.attributes.onremove)?r(n,o):o()}}});
 
-},{}],24:[function(require,module,exports){
-'use strict';
+},{}],26:[function(require,module,exports){
+"use strict";
 
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.detail = exports.home = undefined;
+exports.main = undefined;
 
-var _hyperapp = require('hyperapp');
+var _hyperapp = require("hyperapp");
 
-var _Input = require('./components/Input.js');
+var _router = require("@hyperapp/router");
+
+var _Input = require("./components/Input.js");
 
 var _Input2 = _interopRequireDefault(_Input);
 
-var _Table = require('./components/Table.js');
+var _Table = require("./components/Table.js");
 
 var _Table2 = _interopRequireDefault(_Table);
 
-var _People = require('./components/People.js');
+var _People = require("./components/People.js");
 
 var _People2 = _interopRequireDefault(_People);
 
-var _Movies = require('./components/Movies.js');
+var _MoviesTable = require("./components/MoviesTable.js");
 
-var _Movies2 = _interopRequireDefault(_Movies);
+var _MoviesTable2 = _interopRequireDefault(_MoviesTable);
 
-var _Spinner = require('./components/Spinner.js');
+var _Spinner = require("./components/Spinner.js");
 
 var _Spinner2 = _interopRequireDefault(_Spinner);
 
-var _Empty = require('./components/Empty.js');
+var _Empty = require("./components/Empty.js");
 
 var _Empty2 = _interopRequireDefault(_Empty);
 
-var _FilmsView = require('./components/FilmsView.js');
+var _FilmsView = require("./components/FilmsView.js");
 
 var _FilmsView2 = _interopRequireDefault(_FilmsView);
 
-var _Pagination = require('./components/Pagination.js');
+var _Pagination = require("./components/Pagination.js");
 
 var _Pagination2 = _interopRequireDefault(_Pagination);
 
-var _PersonModal = require('./components/PersonModal.js');
+var _PersonModal = require("./components/PersonModal.js");
 
 var _PersonModal2 = _interopRequireDefault(_PersonModal);
 
-var _ToastContainer = require('./components/ToastContainer.js');
+var _ToastContainer = require("./components/ToastContainer.js");
 
 var _ToastContainer2 = _interopRequireDefault(_ToastContainer);
 
+var _Tabs = require("./components/Tabs.js");
+
+var _Tabs2 = _interopRequireDefault(_Tabs);
+
+var _Home = require("./views/Home.js");
+
+var _Home2 = _interopRequireDefault(_Home);
+
+var _Movies = require("./views/Movies.js");
+
+var _Movies2 = _interopRequireDefault(_Movies);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var main = exports.main = function main(state, actions) {
+    return (0, _hyperapp.h)(
+        "div",
+        { "class": "container grid-xl" },
+        (0, _hyperapp.h)(_Tabs2.default, null),
+        (0, _hyperapp.h)(_router.Route, { path: "/", render: _Home2.default }),
+        (0, _hyperapp.h)(_router.Route, { path: "/movies", render: _Movies2.default })
+    );
+};
+
+},{"./components/Empty.js":2,"./components/FilmsView.js":5,"./components/Input.js":8,"./components/MoviesTable.js":10,"./components/Pagination.js":11,"./components/People.js":12,"./components/PersonModal.js":14,"./components/Spinner.js":17,"./components/Table.js":19,"./components/Tabs.js":20,"./components/ToastContainer.js":22,"./views/Home.js":27,"./views/Movies.js":28,"@hyperapp/router":24,"hyperapp":25}],27:[function(require,module,exports){
+"use strict";
+
+var _hyperapp = require("hyperapp");
+
+var Home = module.exports = function (state, actions) {
+    return (0, _hyperapp.h)(
+        "div",
+        null,
+        "HOME"
+    );
+};
+
+},{"hyperapp":25}],28:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.home = undefined;
+
+var _hyperapp = require("hyperapp");
 
 var home = exports.home = function home(state, actions) {
     return (0, _hyperapp.h)(
-        'div',
-        { 'class': 'container grid-xl' },
+        "div",
+        null,
         (0, _hyperapp.h)(
-            'h2',
+            "h2",
             null,
-            'Movie list'
+            "Movie list"
         ),
         (0, _hyperapp.h)(
-            'div',
-            { 'class': 'columns' },
+            "div",
+            { "class": "columns" },
             (0, _hyperapp.h)(
-                'div',
-                { 'class': 'column col-lg-12', oncreate: function oncreate() {
+                "div",
+                { "class": "column col-lg-12", oncreate: function oncreate() {
                         return actions.movies.load(window.g_urls.movies);
                     } },
-                state.movies.loading == true ? (0, _hyperapp.h)(_Spinner2.default, null) : (0, _hyperapp.h)(_Movies2.default, { movies: state.movies, actions: actions.movies })
+                state.movies.loading == true ? (0, _hyperapp.h)(Spinner, null) : (0, _hyperapp.h)(MoviesTable, { movies: state.movies, actions: actions.movies })
             )
         )
     );
 };
 
-var detail = exports.detail = function detail(state, actions) {
-    return (0, _hyperapp.h)(
-        'div',
-        null,
-        state.loading == true ? (0, _hyperapp.h)(_Spinner2.default, null) : (0, _hyperapp.h)(
-            'div',
-            null,
-            state.person.name
-        )
-    );
-};
-
-},{"./components/Empty.js":2,"./components/FilmsView.js":5,"./components/Input.js":8,"./components/Movies.js":10,"./components/Pagination.js":11,"./components/People.js":12,"./components/PersonModal.js":14,"./components/Spinner.js":17,"./components/Table.js":19,"./components/ToastContainer.js":21,"hyperapp":23}]},{},[22]);
+},{"hyperapp":25}]},{},[23]);
