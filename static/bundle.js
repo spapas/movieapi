@@ -201,7 +201,7 @@ module.exports = {
         };
     },
 
-    saveEdit: function saveEdit() {
+    saveEdit: function saveEdit(key) {
         return function (state) {
             console.log("Saving ...", state);
             var item = state.forms.edit;
@@ -213,7 +213,8 @@ module.exports = {
                 fetch(window.g_urls.movies, {
                     body: JSON.stringify(item),
                     headers: {
-                        'content-type': 'application/json'
+                        'content-type': 'application/json',
+                        'Authorization': "Token " + key
                     },
                     credentials: 'same-origin',
                     method: 'POST'
@@ -1294,7 +1295,7 @@ var Movies = module.exports = function (state, actions) {
                 return actions.updateEdit(null);
             },
             saveAction: function saveAction() {
-                return actions.saveEdit();
+                return actions.saveEdit(state.auth.key);
             },
             updateFieldAction: function updateFieldAction(key, value) {
                 return actions.updateField({ formname: 'edit', fieldname: key, value: value });
