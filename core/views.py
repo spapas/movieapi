@@ -11,29 +11,29 @@ class SmallPaginator(PageNumberPagination):
 
 
 class MovieViewSet(viewsets.ModelViewSet):
-    queryset = core.models.Movie.objects.all()
+    queryset = core.models.Movie.objects.all().order_by('id')
     serializer_class = core.serializers.MovieSerializer
     pagination_class = SmallPaginator
 
 
 class JobViewSet(viewsets.ModelViewSet):
-    queryset = core.models.Job.objects.all()
+    queryset = core.models.Job.objects.all().order_by('id')
     serializer_class = core.serializers.JobSerializer
 
 
 class GenreViewSet(viewsets.ModelViewSet):
-    queryset = core.models.Genre.objects.all()
+    queryset = core.models.Genre.objects.all().order_by('id')
     serializer_class = core.serializers.GenreSerializer
 
 
 class PersonViewSet(viewsets.ModelViewSet):
-    queryset = core.models.Person.objects.all()
+    queryset = core.models.Person.objects.all().order_by('id')
     serializer_class = core.serializers.PersonSerializer
     pagination_class = SmallPaginator
 
 
 class ImageViewSet(viewsets.ModelViewSet):
-    queryset = core.models.Image.objects.all()
+    queryset = core.models.Image.objects.all().order_by('id')
     serializer_class = core.serializers.ImageSerializer
 
 
