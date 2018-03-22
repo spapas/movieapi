@@ -216,7 +216,6 @@ module.exports = {
                         'content-type': 'application/json',
                         'Authorization': "Token " + key
                     },
-                    credentials: 'same-origin',
                     method: 'POST'
 
                 }).then(function (data) {
@@ -366,19 +365,20 @@ var _require = require('hyperapp'),
 
 var FormInput = module.exports = function (_ref) {
     var label = _ref.label,
+        key = _ref.key,
         value = _ref.value,
         action = _ref.action,
         _ref$type = _ref.type,
         type = _ref$type === undefined ? 'text' : _ref$type;
     return h(
         'div',
-        { 'class': 'form-group' },
+        { 'class': 'form-group', key: key },
         h(
             'label',
             { 'class': 'form-label', 'for': '{label}' },
             label
         ),
-        h('input', { 'class': 'form-input', type: type, id: label,
+        h('input', { 'class': 'form-input', type: type, id: key,
             placeholder: label, value: value,
             oninput: function oninput(e) {
                 return action(e.target.value);

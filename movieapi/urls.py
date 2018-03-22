@@ -16,10 +16,12 @@ router.register(r'genres', core.views.GenreViewSet)
 router.register(r'images', core.views.ImageViewSet)
 
 urlpatterns = [
-    url(r'^api/', include(router.urls)),
-    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    url(r'^rest-auth/', include('rest_auth.urls')),
+    path('api/', include(router.urls)),
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    path('rest-auth/', include('rest_auth.urls')),
     path('admin/', admin.site.urls),
 
-    url(r'^.*', core.views.HomeTemplateView.as_view(), name='home', ),
+    
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+urlpatterns += [url(r'^.*', core.views.HomeTemplateView.as_view(), name='home', ),]
