@@ -1170,24 +1170,7 @@ var reducers = module.exports = function (state, actions) {
                 } })
         ),
         (0, _hyperapp.h)(_ToastContainer2.default, { toasts: state.toasts, actions: actions }),
-        "1",
-        (0, _hyperapp.h)(
-            "div",
-            { "class": "accordion" },
-            (0, _hyperapp.h)("input", { type: "checkbox", id: "accordion-1", name: "accordion-checkbox", hidden: true }),
-            (0, _hyperapp.h)(
-                "label",
-                { "class": "accordion-header" },
-                (0, _hyperapp.h)("i", { "class": "icon icon-arrow-right mr-1" }),
-                "Title"
-            ),
-            (0, _hyperapp.h)(
-                "div",
-                { "class": "accordion-body open" },
-                "xx yy zz"
-            )
-        ),
-        "1"
+        JSON.stringify(state)
     );
 };
 
