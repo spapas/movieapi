@@ -17,7 +17,7 @@ class Job(models.Model):
 
 class Person(models.Model):
     name = models.CharField(max_length=128, )
-    imdb_id = models.CharField(max_length=32, )
+    imdb_id = models.CharField(max_length=32, blank=True, null=True, )
     birthday = models.DateField(blank=True, null=True, )
 
     def __str__(self):
@@ -26,12 +26,12 @@ class Person(models.Model):
 
 class Movie(models.Model):
     title = models.CharField(max_length=128, )
-    imdb_id = models.CharField(max_length=32, )
+    imdb_id = models.CharField(max_length=32, blank=True, null=True, )
     release_year = models.CharField(max_length=4, )
     runtime = models.PositiveIntegerField()
     story = models.TextField()
 
-    genres = models.ManyToManyField('Genre')
+    genres = models.ManyToManyField('Genre', blank=True)
 
     def __str__(self):
         return '{0} ({1})'.format(self.title, self.release_year)
