@@ -85,16 +85,33 @@ module.exports = {
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-module.exports = function (_ref) {
-    var formname = _ref.formname,
-        fieldname = _ref.fieldname,
-        value = _ref.value;
-    return function (state) {
-        console.log("Update ", formname, fieldname, value);
-        return {
-            forms: Object.assign({}, state.forms, _defineProperty({}, formname, Object.assign({}, state.forms[formname], _defineProperty({}, fieldname, value))))
+module.exports = {
+
+    updateField: function updateField(_ref) {
+        var formname = _ref.formname,
+            fieldname = _ref.fieldname,
+            value = _ref.value;
+        return function (state) {
+            console.log("Update ", formname, fieldname, value);
+            return {
+                forms: Object.assign({}, state.forms, _defineProperty({}, formname, Object.assign({}, state.forms[formname], _defineProperty({}, fieldname, value))))
+            };
         };
-    };
+    },
+
+    addErrors: function addErrors(_ref2) {
+        var formname = _ref2.formname,
+            errors = _ref2.errors;
+        return function (state) {
+            console.log("Add errors ", errors);
+            return {
+                forms: Object.assign({}, state.forms, _defineProperty({}, formname, Object.assign({}, state.forms[formname], {
+                    errors: errors
+                })))
+            };
+        };
+    }
+
 };
 
 },{}],3:[function(require,module,exports){
@@ -129,14 +146,10 @@ var reducers = module.exports = {
 
 };
 
-},{"./auth.js":1,"./movies.js":4,"./people.js":5,"./toasts.js":6,"@hyperapp/router":23}],4:[function(require,module,exports){
+},{"./auth.js":1,"./movies.js":4,"./people.js":5,"./toasts.js":6,"@hyperapp/router":24}],4:[function(require,module,exports){
 "use strict";
 
 var _forms = require("./forms.js");
-
-var _forms2 = _interopRequireDefault(_forms);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 module.exports = {
     load: function load(url) {
@@ -153,7 +166,7 @@ module.exports = {
                     var page = 1;
                     if (match) page = 1 * match[1];
 
-                    actions.update({ response: j, page: page });
+                    actions.update({ response: j, current: url, page: page });
                     actions.updateLoading(false);
                 });
             }, 100);
@@ -178,10 +191,12 @@ module.exports = {
 
     update: function update(_ref) {
         var response = _ref.response,
+            current = _ref.current,
             page = _ref.page;
         return function (state) {
             return {
                 page: page,
+                current: current,
                 count: response.count,
                 next: response.next,
                 previous: response.previous,
@@ -201,33 +216,61 @@ module.exports = {
         };
     },
 
-    saveEdit: function saveEdit(key) {
-        return function (state) {
+    saveEdit: function saveEdit(_ref2) {
+        var key = _ref2.key,
+            g_actions = _ref2.g_actions;
+        return function (state, actions) {
             console.log("Saving ...", state);
+            actions.updateLoading(true);
             var item = state.forms.edit;
-            if (item.id) {// UPDATE
-
+            var saveUrl = '';
+            var method = '';
+            if (item.id) {
+                // UPDATE
+                console.log("Update item");
+                saveUrl = item.url;
+                method = 'PATCH';
             } else {
                 // CREATE
                 console.log("Create new item");
-                fetch(window.g_urls.movies, {
+                saveUrl = window.g_urls.movies;
+                method = 'POST';
+            }
+
+            window.setTimeout(function () {
+                fetch(saveUrl, {
                     body: JSON.stringify(item),
                     headers: {
                         'content-type': 'application/json',
                         'Authorization': "Token " + key
                     },
-                    method: 'POST'
-
-                }).then(function (data) {
-                    return console.log(data);
+                    method: method
+                }).then(function (response) {
+                    actions.updateLoading(false);
+                    console.log(response.status);
+                    if (response.status == 400) {
+                        response.json().then(function (errors) {
+                            console.log(errors);
+                            actions.addErrors({ formname: 'edit', errors: errors });
+                        });
+                    } else if (response.status == 200 || response.status == 201) {
+                        response.json().then(function (data) {
+                            // Data is the object that was saved
+                            console.log(data);
+                            g_actions.toasts.add({ text: "Successfully saved object!", style: "success" });
+                            actions.updateEdit(null);
+                            actions.load(state.current);
+                        });
+                    }
                 }).catch(function (error) {
-                    return console.error(error);
+                    console.log("ERR", error.status);
                 });
-            }
+            }, 1000);
         };
     },
 
-    updateField: _forms2.default
+    updateField: _forms.updateField,
+    addErrors: _forms.addErrors
 };
 
 },{"./forms.js":2}],5:[function(require,module,exports){
@@ -357,102 +400,150 @@ var FormDateInput = module.exports = function (_ref) {
     );
 };
 
-},{"hyperapp":24}],8:[function(require,module,exports){
+},{"hyperapp":25}],8:[function(require,module,exports){
 'use strict';
 
 var _require = require('hyperapp'),
     h = _require.h;
 
-var FormInput = module.exports = function (_ref) {
-    var label = _ref.label,
-        key = _ref.key,
-        value = _ref.value,
-        action = _ref.action,
-        _ref$type = _ref.type,
-        type = _ref$type === undefined ? 'text' : _ref$type;
+var FormInput = function FormInput(_ref) {
+    var field = _ref.field,
+        action = _ref.action;
     return h(
         'div',
-        { 'class': 'form-group', key: key },
+        { 'class': 'form-group ' + (field.errors ? 'has-error' : ''), key: field.key },
         h(
             'label',
-            { 'class': 'form-label', 'for': '{label}' },
-            label
+            { 'class': 'form-label', 'for': '{field.key}' },
+            field.label
         ),
-        h('input', { 'class': 'form-input', type: type, id: key,
-            placeholder: label, value: value,
+        h('input', { 'class': 'form-input', type: field.type, id: field.key,
+            placeholder: field.label, value: field.value,
             oninput: function oninput(e) {
                 return action(e.target.value);
             }
-        })
+        }),
+        h(
+            'div',
+            { 'class': 'form-input-hint' },
+            field.errors ? field.errors[0] : null
+        )
     );
 };
 
-},{"hyperapp":24}],9:[function(require,module,exports){
-'use strict';
-
-var _require = require('hyperapp'),
-    h = _require.h;
-
-var FormInputLong = module.exports = function (_ref) {
-    var label = _ref.label,
-        value = _ref.value,
-        action = _ref.action,
-        _ref$type = _ref.type,
-        type = _ref$type === undefined ? 'text' : _ref$type;
+var FormInputLong = function FormInputLong(_ref2) {
+    var field = _ref2.field,
+        action = _ref2.action;
     return h(
         'div',
         { 'class': 'form-group' },
         h(
             'label',
-            { 'class': 'form-label', 'for': '{label}' },
-            label
+            { 'class': 'form-label', 'for': '{field.key}' },
+            field.label
         ),
-        h('textarea', { 'class': 'form-input', id: label, rows: '5',
-            placeholder: label,
+        h('textarea', { 'class': 'form-input', id: field.key, rows: '5',
+            placeholder: field.label,
             oninput: function oninput(e) {
                 return action(e.target.value);
             },
-            value: value })
+            value: field.value })
     );
 };
 
-},{"hyperapp":24}],10:[function(require,module,exports){
+module.exports['FormInput'] = FormInput;
+module.exports['FormInputLong'] = FormInputLong;
+
+},{"hyperapp":25}],9:[function(require,module,exports){
 'use strict';
 
 var _hyperapp = require('hyperapp');
 
-var _FormInput = require('./FormInput.js');
+var AbstractInput = function AbstractInput(_ref) {
+    var field = _ref.field,
+        action = _ref.action,
+        realInput = _ref.realInput;
+    return (0, _hyperapp.h)(
+        'div',
+        { 'class': 'form-group ' + (field.errors ? 'has-error' : ''), key: field.key },
+        (0, _hyperapp.h)(
+            'label',
+            { 'class': 'form-label', 'for': '{field.key}' },
+            field.label
+        ),
+        realInput,
+        (0, _hyperapp.h)(
+            'div',
+            { 'class': 'form-input-hint' },
+            field.errors ? field.errors[0] : null
+        )
+    );
+};
 
-var _FormInput2 = _interopRequireDefault(_FormInput);
+var FormInput = function FormInput(_ref2) {
+    var field = _ref2.field,
+        action = _ref2.action;
+    return AbstractInput({
+        field: field,
+        action: action,
+        realInput: (0, _hyperapp.h)('input', { 'class': 'form-input', type: field.type, id: field.key,
+            placeholder: field.label, value: field.value,
+            oninput: function oninput(e) {
+                return action(e.target.value);
+            }
+        })
+    });
+};
 
-var _FormInputLong = require('./FormInputLong.js');
+var FormInputLong = function FormInputLong(_ref3) {
+    var field = _ref3.field,
+        action = _ref3.action;
+    return AbstractInput({
+        field: field,
+        action: action,
+        realInput: (0, _hyperapp.h)('textarea', { 'class': 'form-input', id: field.key, rows: '5',
+            placeholder: field.label,
+            oninput: function oninput(e) {
+                return action(e.target.value);
+            },
+            value: field.value
+        })
 
-var _FormInputLong2 = _interopRequireDefault(_FormInputLong);
+    });
+};
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+module.exports['FormInput'] = FormInput;
+module.exports['FormInputLong'] = FormInputLong;
 
-var renderField = function renderField(field, item, updateFieldAction) {
-    var ftype = _FormInput2.default;
-    if (field.type == 'longtext') ftype = _FormInputLong2.default;
+},{"hyperapp":25}],10:[function(require,module,exports){
+'use strict';
+
+var _hyperapp = require('hyperapp');
+
+var _FormInputs = require('./FormInputs.js');
+
+var _Spinners = require('../components/Spinners.js');
+
+var renderField = function renderField(field, updateFieldAction) {
+    var ftype = _FormInputs.FormInput;
+    if (field.type == 'longtext') ftype = _FormInputs.FormInputLong;
     return ftype({
-        label: field.label,
-        key: field.key,
-        value: item[field.key],
-        type: field.type,
+        field: field,
         action: function action(val) {
             return updateFieldAction(field.key, val);
         }
     });
 };
 
-var renderFields = function renderFields(fields, item, updateFieldAction) {
+var renderFields = function renderFields(fields, updateFieldAction) {
     return fields.map(function (f) {
-        return renderField(f, item, updateFieldAction);
+        return renderField(f, updateFieldAction);
     });
 };
 
 var ModalForm = module.exports = function (_ref) {
-    var formFields = _ref.formFields,
+    var loading = _ref.loading,
+        formFields = _ref.formFields,
         item = _ref.item,
         hideAction = _ref.hideAction,
         saveAction = _ref.saveAction,
@@ -483,29 +574,33 @@ var ModalForm = module.exports = function (_ref) {
                     (0, _hyperapp.h)(
                         'form',
                         { method: 'POST' },
-                        renderFields(formFields, item, updateFieldAction)
+                        renderFields(formFields, updateFieldAction)
                     )
                 )
             ),
             (0, _hyperapp.h)(
                 'div',
                 { 'class': 'modal-footer' },
-                (0, _hyperapp.h)(
-                    'button',
-                    { 'class': 'btn', onclick: hideAction },
-                    'Cancel'
-                ),
-                (0, _hyperapp.h)(
-                    'button',
-                    { 'class': 'btn', onclick: saveAction },
-                    'Ok'
+                loading ? (0, _hyperapp.h)(_Spinners.SpinnerSmall, null) : (0, _hyperapp.h)(
+                    'div',
+                    null,
+                    (0, _hyperapp.h)(
+                        'button',
+                        { 'class': 'btn', onclick: hideAction },
+                        'Cancel'
+                    ),
+                    (0, _hyperapp.h)(
+                        'button',
+                        { 'class': 'ml-2 btn btn-primary', onclick: saveAction },
+                        'Ok'
+                    )
                 )
             )
         )
     );
 };
 
-},{"./FormInput.js":8,"./FormInputLong.js":9,"hyperapp":24}],11:[function(require,module,exports){
+},{"../components/Spinners.js":18,"./FormInputs.js":9,"hyperapp":25}],11:[function(require,module,exports){
 'use strict';
 
 var _require = require('hyperapp'),
@@ -553,7 +648,7 @@ var Toast = module.exports = function (_ref) {
     );
 };
 
-},{"hyperapp":24}],12:[function(require,module,exports){
+},{"hyperapp":25}],12:[function(require,module,exports){
 'use strict';
 
 var _FormInput = require('./FormInput.js');
@@ -617,7 +712,7 @@ var PersonForm = module.exports = function (_ref) {
     );
 };
 
-},{"./FormDateInput.js":7,"./FormInput.js":8,"hyperapp":24}],13:[function(require,module,exports){
+},{"./FormDateInput.js":7,"./FormInput.js":8,"hyperapp":25}],13:[function(require,module,exports){
 'use strict';
 
 var _SpinnerSmall = require('./SpinnerSmall.js');
@@ -683,7 +778,7 @@ var PersonModal = module.exports = function (_ref) {
     );
 };
 
-},{"./PersonForm.js":12,"./SpinnerSmall.js":17,"hyperapp":24}],14:[function(require,module,exports){
+},{"./PersonForm.js":12,"./SpinnerSmall.js":17,"hyperapp":25}],14:[function(require,module,exports){
 'use strict';
 
 var _require = require('hyperapp'),
@@ -735,7 +830,7 @@ var PlotModal = module.exports = function (_ref) {
     );
 };
 
-},{"hyperapp":24}],15:[function(require,module,exports){
+},{"hyperapp":25}],15:[function(require,module,exports){
 'use strict';
 
 var _require = require('hyperapp'),
@@ -758,37 +853,59 @@ var Row = module.exports = function (_ref) {
     );
 };
 
-},{"hyperapp":24}],16:[function(require,module,exports){
+},{"hyperapp":25}],16:[function(require,module,exports){
 "use strict";
 
-var _require = require('hyperapp'),
-    h = _require.h;
+var _hyperapp = require("hyperapp");
 
-// OR <div class="loading loading-lg"></div>
-
-var Spinner = module.exports = function () {
-    return h(
+var Spinner = function Spinner() {
+    return (0, _hyperapp.h)(
         "div",
         { "class": "spinner" },
-        h("div", { "class": "bounce1" }),
-        h("div", { "class": "bounce2" }),
-        h("div", { "class": "bounce3" })
+        (0, _hyperapp.h)("div", { "class": "bounce1" }),
+        (0, _hyperapp.h)("div", { "class": "bounce2" }),
+        (0, _hyperapp.h)("div", { "class": "bounce3" })
     );
 };
 
-},{"hyperapp":24}],17:[function(require,module,exports){
-"use strict";
+var SpinnerSmall = module.exports = function () {
+    return (0, _hyperapp.h)("div", { "class": "loading loading-lg" });
+};
+
+module.exports['Spinner'] = Spinner;
+module.exports['SpinnerSmall'] = SpinnerSmall;
+
+},{"hyperapp":25}],17:[function(require,module,exports){
+'use strict';
 
 var _require = require('hyperapp'),
     h = _require.h;
 
-// OR 
+// OR
 
-var SpinnerSmall = module.exports = function () {
-  return h("div", { "class": "loading loading-lg" });
+},{"hyperapp":25}],18:[function(require,module,exports){
+"use strict";
+
+var _hyperapp = require("hyperapp");
+
+var Spinner = function Spinner() {
+    return (0, _hyperapp.h)(
+        "div",
+        { "class": "spinner" },
+        (0, _hyperapp.h)("div", { "class": "bounce1" }),
+        (0, _hyperapp.h)("div", { "class": "bounce2" }),
+        (0, _hyperapp.h)("div", { "class": "bounce3" })
+    );
 };
 
-},{"hyperapp":24}],18:[function(require,module,exports){
+var SpinnerSmall = module.exports = function () {
+    return (0, _hyperapp.h)("div", { "class": "loading loading-lg" });
+};
+
+module.exports['Spinner'] = Spinner;
+module.exports['SpinnerSmall'] = SpinnerSmall;
+
+},{"hyperapp":25}],19:[function(require,module,exports){
 'use strict';
 
 var _Row = require('./Row.js');
@@ -842,7 +959,7 @@ var Table = module.exports = function (_ref) {
     );
 };
 
-},{"../components/Pagination.js":11,"./Row.js":15,"hyperapp":24}],19:[function(require,module,exports){
+},{"../components/Pagination.js":11,"./Row.js":15,"hyperapp":25}],20:[function(require,module,exports){
 "use strict";
 
 var _hyperapp = require("hyperapp");
@@ -907,7 +1024,7 @@ var Table = module.exports = function (_ref) {
   );
 };
 
-},{"@hyperapp/router":23,"hyperapp":24}],20:[function(require,module,exports){
+},{"@hyperapp/router":24,"hyperapp":25}],21:[function(require,module,exports){
 'use strict';
 
 var _require = require('hyperapp'),
@@ -928,7 +1045,7 @@ var Toast = module.exports = function (_ref) {
     );
 };
 
-},{"hyperapp":24}],21:[function(require,module,exports){
+},{"hyperapp":25}],22:[function(require,module,exports){
 'use strict';
 
 var _Toast = require('./Toast.js');
@@ -952,7 +1069,7 @@ var ToastContainer = module.exports = function (_ref) {
     );
 };
 
-},{"./Toast.js":20,"hyperapp":24}],22:[function(require,module,exports){
+},{"./Toast.js":21,"hyperapp":25}],23:[function(require,module,exports){
 "use strict";
 
 var _hyperapp = require("hyperapp");
@@ -986,13 +1103,13 @@ _actions2.default.location.go('/');
 addEventListener("pushstate", hideToasts);
 addEventListener("popstate", hideToasts);
 
-},{"./actions":3,"./state.js":25,"./views/Main.js":28,"@hyperapp/router":23,"hyperapp":24}],23:[function(require,module,exports){
+},{"./actions":3,"./state.js":26,"./views/Main.js":29,"@hyperapp/router":24,"hyperapp":25}],24:[function(require,module,exports){
 !function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports,require("hyperapp")):"function"==typeof define&&define.amd||e(t.router={},t.hyperapp)}(this,function(t,e){"use strict";function n(t,e,n,o){return{isExact:t,path:e,url:n,params:o}}function o(t){for(var e=t.length;"/"===t[--e];);return t.slice(0,e+1)}var i={state:{pathname:window.location.pathname,previous:window.location.pathname},actions:{go:function(t){history.pushState(null,"",t)},set:function(t){return t}},subscribe:function(t){function e(e){t.set({pathname:window.location.pathname,previous:e.detail?window.location.previous=e.detail:window.location.previous})}var n=function(t){return t.reduce(function(t,e){var n=history[e];return history[e]=function(t,e,o){n.call(this,t,e,o),dispatchEvent(new CustomEvent("pushstate",{detail:t}))},function(){history[e]=n,t&&t()}},null)}(["pushState","replaceState"]);return addEventListener("pushstate",e),addEventListener("popstate",e),function(){removeEventListener("pushstate",e),removeEventListener("popstate",e),n()}}};t.Link=function(t,n){var o=t.to,i=t.location||window.location;return t.href=o,t.onclick=function(e){0!==e.button||e.altKey||e.metaKey||e.ctrlKey||e.shiftKey||"_blank"===t.target||e.currentTarget.origin!==i.origin||(e.preventDefault(),o!==i.pathname&&history.pushState(i.pathname,"",o))},e.h("a",t,n)},t.Route=function(t){var e=t.location||window.location,i=function(t,e,i){if(t===e||!t)return n(t===e,t,e);var a=i&&i.exact,r=o(t).split("/"),c=o(e).split("/");if(!(r.length>c.length||a&&r.length<c.length)){var u=0,s={},p=r.length;for(e="";u<p;u++){if(":"===r[u][0])try{s[r[u].slice(1)]=c[u]=decodeURI(c[u])}catch(t){continue}else if(r[u]!==c[u])return;e+=c[u]+"/"}return n(!1,t,e.slice(0,-1),s)}}(t.path,e.pathname,{exact:!t.parent});return i&&t.render({match:i,location:e})},t.Switch=function(t,e){return e[0]},t.Redirect=function(t){var e=t.location||window.location;history.replaceState(t.from||e.pathname,"",t.to)},t.location=i});
 
-},{"hyperapp":24}],24:[function(require,module,exports){
+},{"hyperapp":25}],25:[function(require,module,exports){
 !function(e,n){"object"==typeof exports&&"undefined"!=typeof module?n(exports):"function"==typeof define&&define.amd||n(e.hyperapp={})}(this,function(e){"use strict";e.h=function(e,n){for(var t,r=[],o=[],i=arguments.length;i-- >2;)r.push(arguments[i]);for(;r.length;)if((t=r.pop())&&t.pop)for(i=t.length;i--;)r.push(t[i]);else null!=t&&!0!==t&&!1!==t&&o.push(t);return"function"==typeof e?e(n||{},o):{nodeName:e,attributes:n||{},children:o,key:n&&n.key}},e.app=function(e,n,t,r){var o,i=[],u=r&&r.children[0]||null,l=u&&function e(n,t){return{nodeName:n.nodeName.toLowerCase(),attributes:{},children:t.call(n.childNodes,function(n){return 3===n.nodeType?n.nodeValue:e(n,t)})}}(u,[].map),f=s(e),a=s(n);return d(function e(n,t,r){for(var o in r)"function"==typeof r[o]?function(e,o){r[e]=function(e){return"function"==typeof(e=o(e))&&(e=e(p(n,f),r)),e&&e!==(t=p(n,f))&&!e.then&&d(f=h(n,s(t,e),f)),e}}(o,r[o]):e(n.concat(o),t[o]=t[o]||{},r[o]=s(r[o]))}([],f,a)),a;function c(){o=!o;var e=t(f,a);for(r&&!o&&(u=function e(n,t,r,o,u,l){if(o===r);else if(null==r)t=n.insertBefore(y(o,u),t);else if(o.nodeName&&o.nodeName===r.nodeName){!function(e,n,t,r){for(var o in s(n,t))t[o]!==("value"===o||"checked"===o?e[o]:n[o])&&m(e,o,t[o],r,n[o]);t.onupdate&&i.push(function(){t.onupdate(e,n)})}(t,r.attributes,o.attributes,u=u||"svg"===o.nodeName);for(var f=[],a={},c={},d=0;d<r.children.length;d++){f[d]=t.childNodes[d];var h=r.children[d],p=v(h);null!=p&&(a[p]=[f[d],h])}for(var d=0,b=0;b<o.children.length;){var h=r.children[d],g=o.children[b],p=v(h),k=v(g);if(c[p])d++;else if(null==k)null==p&&(e(t,f[d],h,g,u),b++),d++;else{var w=a[k]||[];p===k?(e(t,w[0],w[1],g,u),d++):w[0]?e(t,t.insertBefore(w[0],f[d]),w[1],g,u):e(t,f[d],null,g,u),b++,c[k]=g}}for(;d<r.children.length;){var h=r.children[d];null==v(h)&&N(t,f[d],h),d++}for(var d in a)c[a[d][1].key]||N(t,a[d][0],a[d][1])}else o.nodeName===r.nodeName?t.nodeValue=o:(t=n.insertBefore(y(o,u),l=t),N(n,l,r));return t}(r,u,l,l=e));e=i.pop();)e()}function d(){o||(o=!o,setTimeout(c))}function s(e,n){var t={};for(var r in e)t[r]=e[r];for(var r in n)t[r]=n[r];return t}function h(e,n,t){var r={};return e.length?(r[e[0]]=e.length>1?h(e.slice(1),n,t[e[0]]):n,s(t,r)):n}function p(e,n){for(var t=0;t<e.length;t++)n=n[e[t]];return n}function v(e){return e?e.key:null}function m(e,n,t,r,o){if("key"===n);else if("style"===n)for(var i in s(o,t))e[n][i]=null==t||null==t[i]?"":t[i];else"function"==typeof t||n in e&&!r?e[n]=null==t?"":t:null!=t&&!1!==t&&e.setAttribute(n,t),null!=t&&!1!==t||e.removeAttribute(n)}function y(e,n){var t="string"==typeof e||"number"==typeof e?document.createTextNode(e):(n=n||"svg"===e.nodeName)?document.createElementNS("http://www.w3.org/2000/svg",e.nodeName):document.createElement(e.nodeName);if(e.attributes){e.attributes.oncreate&&i.push(function(){e.attributes.oncreate(t)});for(var r=0;r<e.children.length;r++)t.appendChild(y(e.children[r],n));for(var o in e.attributes)m(t,o,e.attributes[o],n)}return t}function N(e,n,t,r){function o(){e.removeChild(function e(n,t,r){if(r=t.attributes){for(var o=0;o<t.children.length;o++)e(n.childNodes[o],t.children[o]);r.ondestroy&&r.ondestroy(n)}return n}(n,t))}t.attributes&&(r=t.attributes.onremove)?r(n,o):o()}}});
 
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 'use strict';
 
 var existingAuth = localStorage.getItem("auth");
@@ -1026,6 +1143,7 @@ var state = module.exports = {
         count: 0,
         next: null,
         previous: null,
+        current: null,
         items: [],
         forms: {
             edit: null,
@@ -1043,7 +1161,7 @@ var state = module.exports = {
     }
 };
 
-},{}],26:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 "use strict";
 
 var _hyperapp = require("hyperapp");
@@ -1066,7 +1184,7 @@ var Home = module.exports = function (state, actions) {
     );
 };
 
-},{"hyperapp":24}],27:[function(require,module,exports){
+},{"hyperapp":25}],28:[function(require,module,exports){
 'use strict';
 
 var _hyperapp = require('hyperapp');
@@ -1115,7 +1233,7 @@ var Login = module.exports = function (state, actions, g_actions) {
     );
 };
 
-},{"../components/FormInput.js":8,"../components/Spinner.js":16,"hyperapp":24}],28:[function(require,module,exports){
+},{"../components/FormInput.js":8,"../components/Spinner.js":16,"hyperapp":25}],29:[function(require,module,exports){
 "use strict";
 
 var _hyperapp = require("hyperapp");
@@ -1160,7 +1278,7 @@ var reducers = module.exports = function (state, actions) {
                     return (0, _Home2.default)(state, actions);
                 } }),
             (0, _hyperapp.h)(_router.Route, { path: "/movies", render: function render() {
-                    return (0, _Movies2.default)(state, actions.movies);
+                    return (0, _Movies2.default)(state, actions.movies, actions);
                 } }),
             (0, _hyperapp.h)(_router.Route, { path: "/people", render: function render() {
                     return (0, _People2.default)(state.people, actions.people);
@@ -1174,14 +1292,12 @@ var reducers = module.exports = function (state, actions) {
     );
 };
 
-},{"../components/Tabs.js":19,"../components/ToastContainer.js":21,"./Home.js":26,"./Login.js":27,"./Movies.js":29,"./People.js":30,"@hyperapp/router":23,"hyperapp":24}],29:[function(require,module,exports){
+},{"../components/Tabs.js":20,"../components/ToastContainer.js":22,"./Home.js":27,"./Login.js":28,"./Movies.js":30,"./People.js":31,"@hyperapp/router":24,"hyperapp":25}],30:[function(require,module,exports){
 'use strict';
 
 var _hyperapp = require('hyperapp');
 
-var _Spinner = require('../components/Spinner.js');
-
-var _Spinner2 = _interopRequireDefault(_Spinner);
+var _Spinners = require('../components/Spinners.js');
 
 var _PlotModal = require('../components/PlotModal.js');
 
@@ -1253,7 +1369,17 @@ var tableDef = [{
 
 var formFields = [{ 'key': 'title', 'label': 'Title', 'type': 'text' }, { 'key': 'release_year', 'label': 'Release Year', 'type': 'number' }, { 'key': 'runtime', 'label': 'Runtime', 'type': 'number' }, { 'key': 'story', 'label': 'Plot', 'type': 'longtext' }];
 
-var Movies = module.exports = function (state, actions) {
+var mergeValuesErrors = function mergeValuesErrors(formFields, item, errors) {
+    return formFields.map(function (f) {
+        return Object.assign({}, f, {
+            'value': item[f.key]
+        }, errors ? {
+            'errors': errors[f.key]
+        } : {});
+    });
+};
+
+var Movies = module.exports = function (state, actions, g_actions) {
     return (0, _hyperapp.h)(
         'div',
         { key: 'movies' },
@@ -1277,7 +1403,7 @@ var Movies = module.exports = function (state, actions) {
                 { 'class': 'column col-lg-12', oncreate: function oncreate() {
                         return actions.load(window.g_urls.movies);
                     } },
-                state.movies.loading == true ? (0, _hyperapp.h)(_Spinner2.default, null) : (0, _hyperapp.h)(_Table2.default, {
+                state.movies.loading == true ? (0, _hyperapp.h)(_Spinners.Spinner, null) : (0, _hyperapp.h)(_Table2.default, {
                     rowHeaders: checkAuth(rowHeaders, state.auth),
                     rowColumns: checkAuth(rowColumns, state.auth),
                     rows: state.movies,
@@ -1285,18 +1411,16 @@ var Movies = module.exports = function (state, actions) {
                 })
             )
         ),
-        '1',
-        JSON.stringify(state.movies.forms.edit),
-        '2',
         state.movies.showPlot ? (0, _hyperapp.h)(_PlotModal2.default, { movie: state.movies.showPlot, actions: actions }) : null,
         state.movies.forms.edit ? (0, _hyperapp.h)(_ModalForm2.default, {
-            formFields: formFields,
+            loading: state.movies.loading,
+            formFields: mergeValuesErrors(formFields, state.movies.forms.edit, state.movies.forms.edit.errors),
             item: state.movies.forms.edit,
             hideAction: function hideAction() {
                 return actions.updateEdit(null);
             },
             saveAction: function saveAction() {
-                return actions.saveEdit(state.auth.key);
+                return actions.saveEdit({ g_actions: g_actions, key: state.auth.key });
             },
             updateFieldAction: function updateFieldAction(key, value) {
                 return actions.updateField({ formname: 'edit', fieldname: key, value: value });
@@ -1305,7 +1429,7 @@ var Movies = module.exports = function (state, actions) {
     );
 };
 
-},{"../components/ModalForm.js":10,"../components/PlotModal.js":14,"../components/Spinner.js":16,"../components/Table.js":18,"hyperapp":24}],30:[function(require,module,exports){
+},{"../components/ModalForm.js":10,"../components/PlotModal.js":14,"../components/Spinners.js":18,"../components/Table.js":19,"hyperapp":25}],31:[function(require,module,exports){
 'use strict';
 
 var _hyperapp = require('hyperapp');
@@ -1366,4 +1490,4 @@ var People = module.exports = function (state, actions) {
     );
 };
 
-},{"../components/PersonModal.js":13,"../components/Spinner.js":16,"../components/Table.js":18,"hyperapp":24}]},{},[22]);
+},{"../components/PersonModal.js":13,"../components/Spinner.js":16,"../components/Table.js":19,"hyperapp":25}]},{},[23]);

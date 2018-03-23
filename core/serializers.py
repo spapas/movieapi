@@ -11,11 +11,10 @@ class GenreSerializer(serializers.HyperlinkedModelSerializer):
 
 class MovieSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
-    genres = GenreSerializer(many=True, )
+    genres = GenreSerializer(many=True, required=False, read_only=True, )
     class Meta:
         model = core.models.Movie
         fields = '__all__'
-        # fields = ('url', 'username', 'email', 'is_staff')
 
 
 class JobSerializer(serializers.HyperlinkedModelSerializer):

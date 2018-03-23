@@ -7,7 +7,7 @@ import core.serializers
 
 
 class SmallPaginator(PageNumberPagination):
-    page_size = 10
+    page_size = 5
 
 
 class MovieViewSet(viewsets.ModelViewSet):
