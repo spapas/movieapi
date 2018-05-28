@@ -3,10 +3,6 @@
 
 var _forms = require('./forms.js');
 
-var _forms2 = _interopRequireDefault(_forms);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 module.exports = {
     login: function login(g_actions) {
         return function (state, actions) {
@@ -77,7 +73,7 @@ module.exports = {
             };
         };
     },
-    updateField: _forms2.default
+    updateField: _forms.updateField
 };
 
 },{"./forms.js":2}],2:[function(require,module,exports){
@@ -146,7 +142,7 @@ var reducers = module.exports = {
 
 };
 
-},{"./auth.js":1,"./movies.js":4,"./people.js":5,"./toasts.js":6,"@hyperapp/router":23}],4:[function(require,module,exports){
+},{"./auth.js":1,"./movies.js":4,"./people.js":5,"./toasts.js":6,"@hyperapp/router":17}],4:[function(require,module,exports){
 "use strict";
 
 var _forms = require("./forms.js");
@@ -268,7 +264,21 @@ module.exports = {
     searchAction: function searchAction(reset) {
         return function (state, actions) {
             console.log("SEARCH", reset, state);
-            if (reset) {}
+            if (reset) {
+
+                actions.load(state.current.split('?')[0]);
+                return {
+                    forms: Object.assign({}, state['forms'], {
+                        search: {}
+                    })
+                };
+            } else {
+                console.log(state.forms.search);
+                var params = Object.keys(state.forms.search).map(function (k) {
+                    return encodeURIComponent(k) + '=' + encodeURIComponent(state.forms.search[k]);
+                }).join('&');
+                actions.load(state.current.split('?')[0] + '?' + params);
+            }
         };
     },
     updateField: _forms.updateField,
@@ -365,98 +375,6 @@ module.exports = {
 };
 
 },{}],7:[function(require,module,exports){
-"use strict";
-
-var _require = require('hyperapp'),
-    h = _require.h;
-
-var dateInput = function dateInput(element) {
-    console.log(element);
-    console.log(flatpickr);
-    flatpickr(element, {
-        onChange: function onChange(selectedDates, dateStr, instance) {
-            console.log("CHANGED", selectedDates, dateStr, instance);
-        }
-    });
-};
-
-var FormDateInput = module.exports = function (_ref) {
-    var label = _ref.label,
-        value = _ref.value,
-        action = _ref.action;
-    return h(
-        "div",
-        { "class": "form-group" },
-        h(
-            "label",
-            { "class": "form-label", "for": "{label}" },
-            label
-        ),
-        h("input", { "class": "form-input", type: "text", id: "{label}",
-            placeholder: label, value: value,
-            onkeyup: function onkeyup(e) {
-                return action(e.target.value);
-            },
-            oncreate: dateInput
-        })
-    );
-};
-
-},{"hyperapp":24}],8:[function(require,module,exports){
-'use strict';
-
-var _require = require('hyperapp'),
-    h = _require.h;
-
-var FormInput = function FormInput(_ref) {
-    var field = _ref.field,
-        action = _ref.action;
-    return h(
-        'div',
-        { 'class': 'form-group ' + (field.errors ? 'has-error' : ''), key: field.key },
-        h(
-            'label',
-            { 'class': 'form-label', 'for': '{field.key}' },
-            field.label
-        ),
-        h('input', { 'class': 'form-input', type: field.type, id: field.key,
-            placeholder: field.label, value: field.value,
-            oninput: function oninput(e) {
-                return action(e.target.value);
-            }
-        }),
-        h(
-            'div',
-            { 'class': 'form-input-hint' },
-            field.errors ? field.errors[0] : null
-        )
-    );
-};
-
-var FormInputLong = function FormInputLong(_ref2) {
-    var field = _ref2.field,
-        action = _ref2.action;
-    return h(
-        'div',
-        { 'class': 'form-group' },
-        h(
-            'label',
-            { 'class': 'form-label', 'for': '{field.key}' },
-            field.label
-        ),
-        h('textarea', { 'class': 'form-input', id: field.key, rows: '5',
-            placeholder: field.label,
-            oninput: function oninput(e) {
-                return action(e.target.value);
-            },
-            value: field.value })
-    );
-};
-
-module.exports['FormInput'] = FormInput;
-module.exports['FormInputLong'] = FormInputLong;
-
-},{"hyperapp":24}],9:[function(require,module,exports){
 'use strict';
 
 var _hyperapp = require('hyperapp');
@@ -517,7 +435,7 @@ var FormInputLong = function FormInputLong(_ref3) {
 module.exports['FormInput'] = FormInput;
 module.exports['FormInputLong'] = FormInputLong;
 
-},{"hyperapp":24}],10:[function(require,module,exports){
+},{"hyperapp":18}],8:[function(require,module,exports){
 'use strict';
 
 var _hyperapp = require('hyperapp');
@@ -602,7 +520,7 @@ var ModalForm = module.exports = function (_ref) {
     );
 };
 
-},{"../components/Spinners.js":18,"./FormInputs.js":9,"hyperapp":24}],11:[function(require,module,exports){
+},{"../components/Spinners.js":12,"./FormInputs.js":7,"hyperapp":18}],9:[function(require,module,exports){
 'use strict';
 
 var _require = require('hyperapp'),
@@ -650,137 +568,7 @@ var Pagination = module.exports = function (_ref) {
     );
 };
 
-},{"hyperapp":24}],12:[function(require,module,exports){
-'use strict';
-
-var _FormInput = require('./FormInput.js');
-
-var _FormInput2 = _interopRequireDefault(_FormInput);
-
-var _FormDateInput = require('./FormDateInput.js');
-
-var _FormDateInput2 = _interopRequireDefault(_FormDateInput);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var _require = require('hyperapp'),
-    h = _require.h;
-
-var PersonForm = module.exports = function (_ref) {
-    var person = _ref.person,
-        actions = _ref.actions;
-
-    return h(
-        'form',
-        null,
-        h(_FormInput2.default, { label: 'Όνομα', value: person.name, action: function action(x) {
-                return actions.updateForm({ object: 'person', field: 'name', value: x });
-            } }),
-        h(_FormInput2.default, { label: 'Φύλο', value: person.gender, action: function action(x) {
-                return actions.updateForm({ object: 'person', field: 'gender', value: x });
-            } }),
-        h(_FormInput2.default, { label: 'Έτος γέννησης', value: person.birth_year, action: function action(x) {
-                return actions.updateForm({ object: 'person', field: 'birth_year', value: x });
-            } }),
-        h(_FormDateInput2.default, { label: 'Έτος γέννησης', value: person.created, action: function action(x) {
-                return actions.updateForm({ object: 'person', field: 'birth_year', value: x });
-            } }),
-        h(
-            'td',
-            null,
-            h(
-                'button',
-                { type: 'button', 'class': 'btn btn-block', onclick: function onclick() {
-                        //console.log(person.url)
-                        var id = person.url.match(/\/(\d+)\/$/)[1];
-                        //console.log(id)
-                        actions.savePerson(id);
-                    }
-                },
-                'Save'
-            )
-        ),
-        h(
-            'td',
-            null,
-            h(
-                'button',
-                { type: 'button', 'class': 'btn btn-block btn-primary', onclick: function onclick() {
-                        return actions.hideModal();
-                    } },
-                'Cancel'
-            )
-        )
-    );
-};
-
-},{"./FormDateInput.js":7,"./FormInput.js":8,"hyperapp":24}],13:[function(require,module,exports){
-'use strict';
-
-var _SpinnerSmall = require('./SpinnerSmall.js');
-
-var _SpinnerSmall2 = _interopRequireDefault(_SpinnerSmall);
-
-var _PersonForm = require('./PersonForm.js');
-
-var _PersonForm2 = _interopRequireDefault(_PersonForm);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var _require = require('hyperapp'),
-    h = _require.h;
-
-var PersonModal = module.exports = function (_ref) {
-    var person = _ref.person,
-        loading = _ref.loading,
-        actions = _ref.actions;
-
-    var personDisplay = '';
-    console.log(person);
-    if (person && person.name) {
-        personDisplay = h(_PersonForm2.default, { person: person, actions: actions });
-    } else {
-        personDisplay = '';
-    }
-    return h(
-        'div',
-        { className: 'modal ' + (person ? 'active' : '') },
-        h('div', { 'class': 'modal-overlay' }),
-        h(
-            'div',
-            { 'class': 'modal-container' },
-            h(
-                'div',
-                { 'class': 'modal-header' },
-                h('button', { 'class': 'btn btn-clear float-right', onclick: function onclick() {
-                        return actions.hideModal();
-                    } }),
-                h(
-                    'div',
-                    { 'class': 'modal-title h5' },
-                    '\u03A3\u03C4\u03BF\u03B9\u03C7\u03B5\u03AF\u03B1 \u03C0\u03C1\u03BF\u03C3\u03CE\u03C0\u03BF\u03C5 ',
-                    person && person.name ? person.name : ''
-                )
-            ),
-            h(
-                'div',
-                { 'class': 'modal-body' },
-                h(
-                    'div',
-                    { 'class': 'content' },
-                    loading ? h(_SpinnerSmall2.default, null) : personDisplay
-                )
-            ),
-            h(
-                'div',
-                { 'class': 'modal-footer' },
-                'ddd'
-            )
-        )
-    );
-};
-
-},{"./PersonForm.js":12,"./SpinnerSmall.js":17,"hyperapp":24}],14:[function(require,module,exports){
+},{"hyperapp":18}],10:[function(require,module,exports){
 'use strict';
 
 var _require = require('hyperapp'),
@@ -832,7 +620,7 @@ var PlotModal = module.exports = function (_ref) {
     );
 };
 
-},{"hyperapp":24}],15:[function(require,module,exports){
+},{"hyperapp":18}],11:[function(require,module,exports){
 'use strict';
 
 var _hyperapp = require('hyperapp');
@@ -888,24 +676,24 @@ var SearchForm = module.exports = function (_ref) {
                 null,
                 (0, _hyperapp.h)(
                     'button',
-                    { style: { 'margin-top': '2.3em' }, 'class': 'btn ml-2', onclick: function onclick(e) {
-                            e.preventDefault();searchAction(true);return false;
-                        } },
-                    'Reset'
-                ),
-                (0, _hyperapp.h)(
-                    'button',
                     { style: { marginTop: '2.3em' }, 'class': 'btn ml-2 btn-primary', onclick: function onclick(e) {
                             e.preventDefault();searchAction();return false;
                         } },
                     'Filter'
+                ),
+                (0, _hyperapp.h)(
+                    'button',
+                    { style: { 'margin-top': '2.3em' }, 'class': 'btn ml-2', onclick: function onclick(e) {
+                            e.preventDefault();searchAction(true);return false;
+                        } },
+                    'Reset'
                 )
             )
         )
     );
 };
 
-},{"../components/Spinners.js":18,"hyperapp":24}],16:[function(require,module,exports){
+},{"../components/Spinners.js":12,"hyperapp":18}],12:[function(require,module,exports){
 "use strict";
 
 var _hyperapp = require("hyperapp");
@@ -927,37 +715,7 @@ var SpinnerSmall = module.exports = function () {
 module.exports['Spinner'] = Spinner;
 module.exports['SpinnerSmall'] = SpinnerSmall;
 
-},{"hyperapp":24}],17:[function(require,module,exports){
-'use strict';
-
-var _require = require('hyperapp'),
-    h = _require.h;
-
-// OR
-
-},{"hyperapp":24}],18:[function(require,module,exports){
-"use strict";
-
-var _hyperapp = require("hyperapp");
-
-var Spinner = function Spinner() {
-    return (0, _hyperapp.h)(
-        "div",
-        { "class": "spinner" },
-        (0, _hyperapp.h)("div", { "class": "bounce1" }),
-        (0, _hyperapp.h)("div", { "class": "bounce2" }),
-        (0, _hyperapp.h)("div", { "class": "bounce3" })
-    );
-};
-
-var SpinnerSmall = module.exports = function () {
-    return (0, _hyperapp.h)("div", { "class": "loading loading-lg" });
-};
-
-module.exports['Spinner'] = Spinner;
-module.exports['SpinnerSmall'] = SpinnerSmall;
-
-},{"hyperapp":24}],19:[function(require,module,exports){
+},{"hyperapp":18}],13:[function(require,module,exports){
 'use strict';
 
 var _hyperapp = require('hyperapp');
@@ -1023,7 +781,7 @@ var Table = module.exports = function (_ref2) {
     );
 };
 
-},{"../components/Pagination.js":11,"hyperapp":24}],20:[function(require,module,exports){
+},{"../components/Pagination.js":9,"hyperapp":18}],14:[function(require,module,exports){
 "use strict";
 
 var _hyperapp = require("hyperapp");
@@ -1088,7 +846,7 @@ var Table = module.exports = function (_ref) {
   );
 };
 
-},{"@hyperapp/router":23,"hyperapp":24}],21:[function(require,module,exports){
+},{"@hyperapp/router":17,"hyperapp":18}],15:[function(require,module,exports){
 'use strict';
 
 var _hyperapp = require('hyperapp');
@@ -1120,7 +878,7 @@ var ToastContainer = module.exports = function (_ref2) {
     );
 };
 
-},{"hyperapp":24}],22:[function(require,module,exports){
+},{"hyperapp":18}],16:[function(require,module,exports){
 "use strict";
 
 var _hyperapp = require("hyperapp");
@@ -1154,13 +912,13 @@ _actions2.default.location.go('/');
 addEventListener("pushstate", hideToasts);
 addEventListener("popstate", hideToasts);
 
-},{"./actions":3,"./state.js":25,"./views/Main.js":28,"@hyperapp/router":23,"hyperapp":24}],23:[function(require,module,exports){
+},{"./actions":3,"./state.js":19,"./views/Main.js":22,"@hyperapp/router":17,"hyperapp":18}],17:[function(require,module,exports){
 !function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports,require("hyperapp")):"function"==typeof define&&define.amd||e(t.router={},t.hyperapp)}(this,function(t,e){"use strict";function n(t,e,n,o){return{isExact:t,path:e,url:n,params:o}}function o(t){for(var e=t.length;"/"===t[--e];);return t.slice(0,e+1)}var i={state:{pathname:window.location.pathname,previous:window.location.pathname},actions:{go:function(t){history.pushState(null,"",t)},set:function(t){return t}},subscribe:function(t){function e(e){t.set({pathname:window.location.pathname,previous:e.detail?window.location.previous=e.detail:window.location.previous})}var n=function(t){return t.reduce(function(t,e){var n=history[e];return history[e]=function(t,e,o){n.call(this,t,e,o),dispatchEvent(new CustomEvent("pushstate",{detail:t}))},function(){history[e]=n,t&&t()}},null)}(["pushState","replaceState"]);return addEventListener("pushstate",e),addEventListener("popstate",e),function(){removeEventListener("pushstate",e),removeEventListener("popstate",e),n()}}};t.Link=function(t,n){var o=t.to,i=t.location||window.location;return t.href=o,t.onclick=function(e){0!==e.button||e.altKey||e.metaKey||e.ctrlKey||e.shiftKey||"_blank"===t.target||e.currentTarget.origin!==i.origin||(e.preventDefault(),o!==i.pathname&&history.pushState(i.pathname,"",o))},e.h("a",t,n)},t.Route=function(t){var e=t.location||window.location,i=function(t,e,i){if(t===e||!t)return n(t===e,t,e);var a=i&&i.exact,r=o(t).split("/"),c=o(e).split("/");if(!(r.length>c.length||a&&r.length<c.length)){var u=0,s={},p=r.length;for(e="";u<p;u++){if(":"===r[u][0])try{s[r[u].slice(1)]=c[u]=decodeURI(c[u])}catch(t){continue}else if(r[u]!==c[u])return;e+=c[u]+"/"}return n(!1,t,e.slice(0,-1),s)}}(t.path,e.pathname,{exact:!t.parent});return i&&t.render({match:i,location:e})},t.Switch=function(t,e){return e[0]},t.Redirect=function(t){var e=t.location||window.location;history.replaceState(t.from||e.pathname,"",t.to)},t.location=i});
 
-},{"hyperapp":24}],24:[function(require,module,exports){
+},{"hyperapp":18}],18:[function(require,module,exports){
 !function(e,n){"object"==typeof exports&&"undefined"!=typeof module?n(exports):"function"==typeof define&&define.amd||n(e.hyperapp={})}(this,function(e){"use strict";e.h=function(e,n){for(var t,r=[],o=[],i=arguments.length;i-- >2;)r.push(arguments[i]);for(;r.length;)if((t=r.pop())&&t.pop)for(i=t.length;i--;)r.push(t[i]);else null!=t&&!0!==t&&!1!==t&&o.push(t);return"function"==typeof e?e(n||{},o):{nodeName:e,attributes:n||{},children:o,key:n&&n.key}},e.app=function(e,n,t,r){var o,i=[],u=r&&r.children[0]||null,l=u&&function e(n,t){return{nodeName:n.nodeName.toLowerCase(),attributes:{},children:t.call(n.childNodes,function(n){return 3===n.nodeType?n.nodeValue:e(n,t)})}}(u,[].map),f=s(e),a=s(n);return d(function e(n,t,r){for(var o in r)"function"==typeof r[o]?function(e,o){r[e]=function(e){return"function"==typeof(e=o(e))&&(e=e(p(n,f),r)),e&&e!==(t=p(n,f))&&!e.then&&d(f=h(n,s(t,e),f)),e}}(o,r[o]):e(n.concat(o),t[o]=t[o]||{},r[o]=s(r[o]))}([],f,a)),a;function c(){o=!o;var e=t(f,a);for(r&&!o&&(u=function e(n,t,r,o,u,l){if(o===r);else if(null==r)t=n.insertBefore(y(o,u),t);else if(o.nodeName&&o.nodeName===r.nodeName){!function(e,n,t,r){for(var o in s(n,t))t[o]!==("value"===o||"checked"===o?e[o]:n[o])&&m(e,o,t[o],r,n[o]);t.onupdate&&i.push(function(){t.onupdate(e,n)})}(t,r.attributes,o.attributes,u=u||"svg"===o.nodeName);for(var f=[],a={},c={},d=0;d<r.children.length;d++){f[d]=t.childNodes[d];var h=r.children[d],p=v(h);null!=p&&(a[p]=[f[d],h])}for(var d=0,b=0;b<o.children.length;){var h=r.children[d],g=o.children[b],p=v(h),k=v(g);if(c[p])d++;else if(null==k)null==p&&(e(t,f[d],h,g,u),b++),d++;else{var w=a[k]||[];p===k?(e(t,w[0],w[1],g,u),d++):w[0]?e(t,t.insertBefore(w[0],f[d]),w[1],g,u):e(t,f[d],null,g,u),b++,c[k]=g}}for(;d<r.children.length;){var h=r.children[d];null==v(h)&&N(t,f[d],h),d++}for(var d in a)c[a[d][1].key]||N(t,a[d][0],a[d][1])}else o.nodeName===r.nodeName?t.nodeValue=o:(t=n.insertBefore(y(o,u),l=t),N(n,l,r));return t}(r,u,l,l=e));e=i.pop();)e()}function d(){o||(o=!o,setTimeout(c))}function s(e,n){var t={};for(var r in e)t[r]=e[r];for(var r in n)t[r]=n[r];return t}function h(e,n,t){var r={};return e.length?(r[e[0]]=e.length>1?h(e.slice(1),n,t[e[0]]):n,s(t,r)):n}function p(e,n){for(var t=0;t<e.length;t++)n=n[e[t]];return n}function v(e){return e?e.key:null}function m(e,n,t,r,o){if("key"===n);else if("style"===n)for(var i in s(o,t))e[n][i]=null==t||null==t[i]?"":t[i];else"function"==typeof t||n in e&&!r?e[n]=null==t?"":t:null!=t&&!1!==t&&e.setAttribute(n,t),null!=t&&!1!==t||e.removeAttribute(n)}function y(e,n){var t="string"==typeof e||"number"==typeof e?document.createTextNode(e):(n=n||"svg"===e.nodeName)?document.createElementNS("http://www.w3.org/2000/svg",e.nodeName):document.createElement(e.nodeName);if(e.attributes){e.attributes.oncreate&&i.push(function(){e.attributes.oncreate(t)});for(var r=0;r<e.children.length;r++)t.appendChild(y(e.children[r],n));for(var o in e.attributes)m(t,o,e.attributes[o],n)}return t}function N(e,n,t,r){function o(){e.removeChild(function e(n,t,r){if(r=t.attributes){for(var o=0;o<t.children.length;o++)e(n.childNodes[o],t.children[o]);r.ondestroy&&r.ondestroy(n)}return n}(n,t))}t.attributes&&(r=t.attributes.onremove)?r(n,o):o()}}});
 
-},{}],25:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 'use strict';
 
 var existingAuth = localStorage.getItem("auth");
@@ -1212,7 +970,7 @@ var state = module.exports = {
     }
 };
 
-},{}],26:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 "use strict";
 
 var _hyperapp = require("hyperapp");
@@ -1235,20 +993,14 @@ var Home = module.exports = function (state, actions) {
     );
 };
 
-},{"hyperapp":24}],27:[function(require,module,exports){
+},{"hyperapp":18}],21:[function(require,module,exports){
 'use strict';
 
 var _hyperapp = require('hyperapp');
 
-var _FormInput = require('../components/FormInput.js');
+var _FormInputs = require('../components/FormInputs.js');
 
-var _FormInput2 = _interopRequireDefault(_FormInput);
-
-var _Spinner = require('../components/Spinner.js');
-
-var _Spinner2 = _interopRequireDefault(_Spinner);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _Spinners = require('../components/Spinners.js');
 
 var okClick = function okClick(e, actions, g_actions) {
     actions.login(g_actions);
@@ -1267,13 +1019,17 @@ var Login = module.exports = function (state, actions, g_actions) {
         (0, _hyperapp.h)(
             'form',
             { method: 'POST' },
-            (0, _hyperapp.h)(_FormInput2.default, { label: 'Username', value: state.forms.login.username, action: function action(value) {
+            (0, _hyperapp.h)(_FormInputs.FormInput, {
+                field: { label: 'Username', value: state.forms.login.username, type: 'text' },
+                action: function action(value) {
                     return actions.updateField({ formname: 'login', fieldname: 'username', value: value });
                 } }),
-            (0, _hyperapp.h)(_FormInput2.default, { label: 'Password', value: state.forms.login.password, type: 'password', action: function action(value) {
+            (0, _hyperapp.h)(_FormInputs.FormInput, {
+                field: { label: 'Password', value: state.forms.login.password, type: 'password' },
+                action: function action(value) {
                     return actions.updateField({ formname: 'login', fieldname: 'password', value: value });
                 } }),
-            state.loading == true ? (0, _hyperapp.h)(_Spinner2.default, null) : (0, _hyperapp.h)(
+            state.loading == true ? (0, _hyperapp.h)(_Spinners.Spinner, null) : (0, _hyperapp.h)(
                 'button',
                 { id: 'btn', name: 'btn', 'class': 'btn btn-primary', onclick: function onclick(e) {
                         return okClick(e, actions, g_actions);
@@ -1284,7 +1040,7 @@ var Login = module.exports = function (state, actions, g_actions) {
     );
 };
 
-},{"../components/FormInput.js":8,"../components/Spinner.js":16,"hyperapp":24}],28:[function(require,module,exports){
+},{"../components/FormInputs.js":7,"../components/Spinners.js":12,"hyperapp":18}],22:[function(require,module,exports){
 "use strict";
 
 var _hyperapp = require("hyperapp");
@@ -1343,7 +1099,7 @@ var reducers = module.exports = function (state, actions) {
     );
 };
 
-},{"../components/Tabs.js":20,"../components/ToastContainer.js":21,"./Home.js":26,"./Login.js":27,"./Movies.js":29,"./People.js":30,"@hyperapp/router":23,"hyperapp":24}],29:[function(require,module,exports){
+},{"../components/Tabs.js":14,"../components/ToastContainer.js":15,"./Home.js":20,"./Login.js":21,"./Movies.js":23,"./People.js":24,"@hyperapp/router":17,"hyperapp":18}],23:[function(require,module,exports){
 'use strict';
 
 var _hyperapp = require('hyperapp');
@@ -1442,13 +1198,13 @@ var Movies = module.exports = function (state, actions, g_actions) {
             'h2',
             null,
             'Movie list \xA0  \xA0',
-            (0, _hyperapp.h)(
+            state.auth.key ? (0, _hyperapp.h)(
                 'button',
                 { 'class': 'btn btn-primary btn-action btn-lg', onclick: function onclick() {
                         return actions.updateEdit({});
                     } },
                 (0, _hyperapp.h)('i', { 'class': 'icon icon-plus' })
-            )
+            ) : null
         ),
         (0, _hyperapp.h)(
             'div',
@@ -1491,7 +1247,7 @@ var Movies = module.exports = function (state, actions, g_actions) {
     );
 };
 
-},{"../components/ModalForm.js":10,"../components/PlotModal.js":14,"../components/SearchForm.js":15,"../components/Spinners.js":18,"../components/Table.js":19,"hyperapp":24}],30:[function(require,module,exports){
+},{"../components/ModalForm.js":8,"../components/PlotModal.js":10,"../components/SearchForm.js":11,"../components/Spinners.js":12,"../components/Table.js":13,"hyperapp":18}],24:[function(require,module,exports){
 'use strict';
 
 var _hyperapp = require('hyperapp');
@@ -1501,10 +1257,6 @@ var _Spinners = require('../components/Spinners.js');
 var _Table = require('../components/Table.js');
 
 var _Table2 = _interopRequireDefault(_Table);
-
-var _PersonModal = require('../components/PersonModal.js');
-
-var _PersonModal2 = _interopRequireDefault(_PersonModal);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1549,4 +1301,4 @@ var People = module.exports = function (state, actions) {
     );
 };
 
-},{"../components/PersonModal.js":13,"../components/Spinners.js":18,"../components/Table.js":19,"hyperapp":24}]},{},[22]);
+},{"../components/Spinners.js":12,"../components/Table.js":13,"hyperapp":18}]},{},[16]);

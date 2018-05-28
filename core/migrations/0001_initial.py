@@ -7,69 +7,116 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Genre',
+            name="Genre",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=32, unique=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=32, unique=True)),
             ],
         ),
         migrations.CreateModel(
-            name='Image',
+            name="Image",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('description', models.CharField(max_length=128)),
-                ('image', models.ImageField(upload_to='')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("description", models.CharField(max_length=128)),
+                ("image", models.ImageField(upload_to="")),
             ],
         ),
         migrations.CreateModel(
-            name='Job',
+            name="Job",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=32, unique=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=32, unique=True)),
             ],
         ),
         migrations.CreateModel(
-            name='Movie',
+            name="Movie",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=128)),
-                ('imdb_id', models.CharField(max_length=32)),
-                ('release_year', models.CharField(max_length=4)),
-                ('runtime', models.PositiveIntegerField()),
-                ('story', models.TextField()),
-                ('genres', models.ManyToManyField(to='core.Genre')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("title", models.CharField(max_length=128)),
+                ("imdb_id", models.CharField(max_length=32)),
+                ("release_year", models.CharField(max_length=4)),
+                ("runtime", models.PositiveIntegerField()),
+                ("story", models.TextField()),
+                ("genres", models.ManyToManyField(to="core.Genre")),
             ],
         ),
         migrations.CreateModel(
-            name='MoviePerson',
+            name="MoviePerson",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('job', models.ForeignKey(on_delete='PROTECT', to='core.Job')),
-                ('movie', models.ForeignKey(on_delete='PROTECT', to='core.Movie')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("job", models.ForeignKey(on_delete="PROTECT", to="core.Job")),
+                ("movie", models.ForeignKey(on_delete="PROTECT", to="core.Movie")),
             ],
         ),
         migrations.CreateModel(
-            name='Person',
+            name="Person",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=128)),
-                ('imdb_id', models.CharField(max_length=32)),
-                ('birthday', models.DateField(blank=True, null=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=128)),
+                ("imdb_id", models.CharField(max_length=32)),
+                ("birthday", models.DateField(blank=True, null=True)),
             ],
         ),
         migrations.AddField(
-            model_name='movieperson',
-            name='person',
-            field=models.ForeignKey(on_delete='PROTECT', to='core.Person'),
+            model_name="movieperson",
+            name="person",
+            field=models.ForeignKey(on_delete="PROTECT", to="core.Person"),
         ),
         migrations.AddField(
-            model_name='image',
-            name='movie',
-            field=models.ForeignKey(on_delete='PROTECT', to='core.Movie'),
+            model_name="image",
+            name="movie",
+            field=models.ForeignKey(on_delete="PROTECT", to="core.Movie"),
         ),
     ]

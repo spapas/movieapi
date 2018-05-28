@@ -5,24 +5,22 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('core', '0001_initial'),
-    ]
+    dependencies = [("core", "0001_initial")]
 
     operations = [
         migrations.AlterField(
-            model_name='movie',
-            name='genres',
-            field=models.ManyToManyField(blank=True, to='core.Genre'),
+            model_name="movie",
+            name="genres",
+            field=models.ManyToManyField(blank=True, to="core.Genre"),
         ),
         migrations.AlterField(
-            model_name='movie',
-            name='imdb_id',
+            model_name="movie",
+            name="imdb_id",
             field=models.CharField(blank=True, max_length=32, null=True),
         ),
         migrations.AlterField(
-            model_name='person',
-            name='imdb_id',
+            model_name="person",
+            name="imdb_id",
             field=models.CharField(blank=True, max_length=32, null=True),
         ),
     ]

@@ -13,7 +13,7 @@ class SmallPaginator(PageNumberPagination):
 
 
 class MovieViewSet(viewsets.ModelViewSet):
-    queryset = core.models.Movie.objects.all().order_by('id')
+    queryset = core.models.Movie.objects.all().order_by("id")
     serializer_class = core.serializers.MovieSerializer
     pagination_class = SmallPaginator
     filter_backends = (filters.DjangoFilterBackend,)
@@ -21,21 +21,21 @@ class MovieViewSet(viewsets.ModelViewSet):
 
 
 class JobViewSet(viewsets.ModelViewSet):
-    queryset = core.models.Job.objects.all().order_by('id')
+    queryset = core.models.Job.objects.all().order_by("id")
     serializer_class = core.serializers.JobSerializer
     filter_backends = (filters.DjangoFilterBackend,)
     filter_class = core.filters.JobFilter
 
 
 class GenreViewSet(viewsets.ModelViewSet):
-    queryset = core.models.Genre.objects.all().order_by('id')
+    queryset = core.models.Genre.objects.all().order_by("id")
     serializer_class = core.serializers.GenreSerializer
     filter_backends = (filters.DjangoFilterBackend,)
     filter_class = core.filters.GenreFilter
 
 
 class PersonViewSet(viewsets.ModelViewSet):
-    queryset = core.models.Person.objects.all().order_by('id')
+    queryset = core.models.Person.objects.all().order_by("id")
     serializer_class = core.serializers.PersonSerializer
     pagination_class = SmallPaginator
     filter_backends = (filters.DjangoFilterBackend,)
@@ -43,9 +43,9 @@ class PersonViewSet(viewsets.ModelViewSet):
 
 
 class ImageViewSet(viewsets.ModelViewSet):
-    queryset = core.models.Image.objects.all().order_by('id')
+    queryset = core.models.Image.objects.all().order_by("id")
     serializer_class = core.serializers.ImageSerializer
 
 
 class HomeTemplateView(TemplateView):
-    template_name = 'home.html'
+    template_name = "home.html"
