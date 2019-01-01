@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework.authtoken",
     "rest_auth",
+    "graphene_django",
     "core",
 ]
 
@@ -118,4 +119,8 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework.authentication.TokenAuthentication",
     ),
+}
+
+GRAPHENE = {
+    'SCHEMA': 'core.schema.schema' # Where your Graphene schema lives
 }

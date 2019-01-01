@@ -4,6 +4,7 @@ from django.urls import path, re_path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
+from graphene_django.views import GraphQLView
 from rest_framework import routers
 import core.views
 
@@ -16,6 +17,7 @@ router.register(r"images", core.views.ImageViewSet)
 
 urlpatterns = (
     [
+        path("graphql/", GraphQLView.as_view(graphiql=True)),
         path("api/", include(router.urls)),
         path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
         path("rest-auth/", include("rest_auth.urls")),
